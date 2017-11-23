@@ -2,13 +2,6 @@
   "name": "quarry-dns",
   "version": "0.6.2",
   "description": "A rock solid, dynamic DNS server with swappable backends and CRUD API",
-  "main": "application.js",
-  "engines": {
-    "node": "0.10.x"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/containership/quarry.git"
@@ -30,21 +23,58 @@
     "url": "https://github.com/containership/quarry/issues"
   },
   "homepage": "https://github.com/containership/quarry",
-  "dependencies": {
-    "async": "^0.9.0",
-    "aws-sdk": "^2.0.30",
-    "body-parser": "^1.10.0",
-    "express": "^4.10.4",
-    "lodash": "^2.4.1",
-    "mongodb": "^1.4.23",
-    "native-dns": "^0.7.0",
-    "node-statsd": "^0.1.0",
-    "nomnom": "^1.8.1",
-    "redis": "^0.12.1",
-    "winston": "^0.8.3",
-    "winston-redis": "^1.0.0"
-  },
+  "main": "application.js",
   "bin": {
-    "quarry": "./cli.js"
+    "quarry": "./bin/quarry.js"
+  },
+  "scripts": {
+    "// workstation": "",
+    "dev": "npm run docker:serve:dev -- npm run container:serve --",
+    "prod": "npm run docker:serve -- npm run container:serve --",
+
+    "// container": "",
+    "container:serve": "node ./bin/quarry.js",
+
+    "// docker: make image": "",
+    "release": "run-s release:prep release:build",
+
+    "// docker: prepare for build": "",
+    "release:run": "docker-compose run --rm node",
+    "release:prep": "npx npm-run-all release:prep:lock-file release:prep:remove-modules",
+    "release:prep:lock-file": "npm run release:run -- npm install",
+    "release:prep:remove-modules": "npm run release:run -- rm -rf ./node_modules",
+
+    "// docker: build and tag": "",
+    "release:build": "npx npm-run-all release:build:version release:build:tag-latest",
+    "release:build:version": "npx cross-var docker build -t containership/$npm_package_name:$npm_package_version .",
+    "release:build:tag-latest": "npx cross-var docker tag containership/$npm_package_name:$npm_package_version containership/$npm_package_name:latest",
+
+    "// docker: run without ports opened": "",
+    "docker:run": "docker-compose run --rm service",
+    "docker:run:dev": "docker-compose run --rm service_dev",
+
+    "// docker: interactive shell": "",
+    "docker:shell": "npm run docker:run /bin/sh",
+    "docker:shell:dev": "npm run docker:run:dev /bin/sh",
+
+    "// docker: run with ports opened": "",
+    "docker:serve": "docker-compose run --rm --service-ports service",
+    "docker:serve:dev": "docker-compose run --rm --service-ports service_dev"
+
+  },
+  "dependencies": {
+    "async": "0.9.2",
+    "aws-sdk": "2.156.0",
+    "body-parser": "1.18.2",
+    "express": "4.16.2",
+    "lodash": "2.4.1",
+    "mongodb": "1.4.23",
+    "native-dns": "0.7.0",
+    "node-statsd": "0.1.0",
+    "nomnom": "1.8.1",
+    "redis": "0.12.1",
+    "winston": "0.8.3",
+    "winston-redis": "1.0.0",
+    "path-to-regexp": "2.1.0"
   }
 }

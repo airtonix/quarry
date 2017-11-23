@@ -1,0 +1,13 @@
+---
+version: "2.0"
+
+services:
+
+  container:
+    image: node:8-alpine
+    working_dir: /build
+    volumes:
+    - "./:/build"
+
+  service:
+    image: containership/qaurry:{{version}}

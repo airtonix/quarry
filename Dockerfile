@@ -1,22 +1,16 @@
-FROM ubuntu:14.04
-
-MAINTAINER ContainerShip Developers <developers@containership.io>
+FROM node:8-alpine as builder
 
 # create app directory
-RUN mkdir /app
+WORKDIR /build
+COPY ./package.json ./package.json
+COPY ./package-lock.json ./package-lock.json
+RUN npm install
 
-# install curl / npm
-RUN apt-get update && apt-get install -y npm curl
+FROM node:8-alpine
 
-# install node
-RUN npm install n -g
-RUN n 0.10.35
-
+WORKDIR /app
 # add code
-ADD . /app
+COPY --from=builder /build/node_modules/ /app/node_modules/
+COPY . .
 
-# install dependencies
-RUN cd /app; npm install -g
-
-# set entrypoint
-ENTRYPOINT ["quarry"]
+CMD ["node" , "./cli.js"]

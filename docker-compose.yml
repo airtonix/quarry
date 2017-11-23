@@ -1,0 +1,25 @@
+---
+version: "2.0"
+
+services:
+
+  node:
+    image: node:8-alpine
+    working_dir: /build
+    volumes:
+    - "./:/build"
+
+  service:
+    image: containership/quarry-dns
+    ports:
+    - "53:53"
+    - "53:53/udp"
+    - "5353:5353"
+
+  service_dev:
+    extends: service
+    volumes:
+    - "./package.json:/app/package.json"
+    - "./src:/app/src"
+    - "./bin:/app/bin"
+    - "./data:/data"
