@@ -1,0 +1,9 @@
+
+PUT http://localhost:5353/v1/records/(.*).docker HTTP/1.1
+content-type: application/json
+
+{
+    "address": "192.168.0.1",
+    "type": "A",
+    "ttl": 60
+}

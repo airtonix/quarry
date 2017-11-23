@@ -3,6 +3,7 @@ var _ = require("lodash");
 var utils = require([__dirname, "utils"].join("/"));
 var logger = require([__dirname, "logger"].join("/"));
 var statsd = require([__dirname, "statsd"].join("/"));
+var pathToRegexp = require('path-to-regexp');
 
 // Server object
 function Server(options){
@@ -15,10 +16,18 @@ function Server(options){
     // listen for requests
     this.server.on("request", function(req, res){
         var query = req.question[0].name;
+        var record = self.getRecord(query);
+        logger.log('info', ['request.query', query]);
 
         // check if record exists
-        if(_.has(self.records, query)){
-            res.answer = self.records[query];
+        if(record){
+            console.log(JSON.stringify(record));
+            res.answer = record.map(item => {
+                item.name = query;
+                return item;
+            });
+
+            logger.log('info', ['response.answer', record]);
             res.send();
         }
 
@@ -75,6 +84,13 @@ Server.prototype.get_forwarder = function(query){
     });
 
     return request;
+}
+
+// match queries on keys in `this.records` using path-to-regex
+Server.prototype.getRecord = function (query) {
+    return _.find(this.records, function(record, key) {
+        return pathToRegexp(key).exec(query);
+    })
 }
 
 // update configuration from backend

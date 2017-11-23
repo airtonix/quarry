@@ -1,22 +1,25 @@
 #!/usr/bin/env node
 var fs = require("fs");
+var join = require('path').join;
+var resolve = require('path').resolve;
 var _ = require("lodash");
 var dns = require("native-dns");
 var nomnom = require("nomnom");
-var pkg = require([__dirname, "package"].join("/"));
-var utils = require([__dirname, "lib", "utils"].join("/"));
-var logger = require([__dirname, "lib", "logger"].join("/"));
-var statsd = require([__dirname, "lib", "statsd"].join("/"));
-var Server = require([__dirname, "lib", "server"].join("/"));
-var API = require([__dirname, "lib", "api"].join("/"));
+var pkg = require("../package.json");
+var utils = require("../src/lib/utils");
+var logger = require("../src/lib/logger");
+var statsd = require("../src/lib/statsd");
+var Server = require("../src/lib/server");
+var API = require("../src/lib/api");
+
+var CONFIG_STORE_PATH = resolve(__dirname, join("..", "src", "config"));
 
 // get configuration options
-var configuration = {};
-var available_configs = fs.readdirSync([__dirname, "config"].join("/"));
-_.each(available_configs, function(config){
-    var config_name = config.split(".")[0];
-    configuration[config_name] = require([__dirname, "config", config].join("/"));
-});
+var configuration = _.reduce(fs.readdirSync(CONFIG_STORE_PATH),
+    function(result, configFile){
+        result[configFile.split(".")[0]] = require(join(CONFIG_STORE_PATH, configFile));
+        return result;
+    }, {});
 
 // set options
 var disk_options = _.defaults(_.clone(configuration.default), _.clone(configuration.disk));

@@ -51,7 +51,7 @@ module.exports = function(options){
     delete options.persistence;
 
     // disable logger
-    logger.disable();
+    // logger.disable();
 
     // init statsd
     statsd.initialize(_.pick(options, ["statsd-host", "statsd-port"]));

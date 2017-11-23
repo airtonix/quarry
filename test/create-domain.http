@@ -1,0 +1,9 @@
+
+POST http://localhost:5353/v1/records/(.*).docker HTTP/1.1
+content-type: application/json
+
+{
+    "address": "1.2.3.4",
+    "type": "A",
+    "ttl": 60
+}

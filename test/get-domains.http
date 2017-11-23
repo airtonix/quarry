@@ -1,0 +1,3 @@
+
+GET http://localhost:5353/v1/records/ HTTP/1.1
+content-type: application/json

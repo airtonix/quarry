@@ -1,4 +1,5 @@
 var _ = require("lodash");
+var logger = require('../../lib/logger');
 var persistence;
 
 module.exports = {
@@ -8,6 +9,7 @@ module.exports = {
     },
 
     get: function(req, res, next){
+        logger.log('info', ['api.record.get.all']);
         persistence.get_configuration(function(err, configuration){
             res.stash.body = configuration.records;
             return next();
